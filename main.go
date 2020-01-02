@@ -12,11 +12,11 @@ import (
 )
 
 var (
-	host        = "http://cwt-test.shangke.ltd/v1/debug/token"
-	currNumber = 10
+	host       = "http://caifu-local.colourlife.com/admin/report/auto/insert"
+	currNumber = 9
 	httpChan   = make(chan string, currNumber)
 	ctx        = context.Background()
-	queryData = map[string]string{
+	queryData  = map[string]string{
 		"a": "1",
 		"ab": "122",
 		"c": "1234",
@@ -36,7 +36,7 @@ func main() {
 			fmt.Println(data)
 		}
 
-		if count == currNumber - 1 {
+		if count == currNumber {
 			break
 		}
 	}
