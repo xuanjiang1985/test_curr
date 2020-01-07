@@ -12,20 +12,18 @@ import (
 )
 
 var (
-	host       = "http://caifu-local.colourlife.com/admin/report/auto/insert"
+	host       = "http://caifu-local.colourlife.com/api/activity/test/insert"
 	currNumber = 9
 	httpChan   = make(chan string, currNumber)
 	ctx        = context.Background()
 	queryData  = map[string]string{
-		"a": "1",
+		"a":  "1",
 		"ab": "122",
-		"c": "1234",
+		"c":  "1234",
 	}
 )
 
-
 func main() {
-
 	httpGet(ctx, httpChan)
 
 	//httpPost(ctx, httpChan)
@@ -59,16 +57,19 @@ func httpGetChild(ctx context.Context, i int, done chan string) {
 		params.Set(k, v)
 	}
 
-
-	httpUrl, _  := url.Parse(host)
+	httpUrl, _ := url.Parse(host)
 	httpUrl.RawQuery = params.Encode()
 	httpPath := httpUrl.String()
 
-	res, _ := http.Get(httpPath)
+	res, err := http.Get(httpPath)
+	if err != nil {
+		done <- start + err.Error()
+		return
+	}
 	defer res.Body.Close()
 
-	end := start + "   " + time.Now().Format("01-02 15:04:05.000")
-	done <- end
+	start += "   " + time.Now().Format("01-02 15:04:05.000")
+	done <- start
 
 }
 
@@ -83,11 +84,14 @@ func httpPostChild(ctx context.Context, i int, done chan string) {
 
 	start := "start" + strconv.Itoa(i) + "   " + time.Now().Format("01-02 15:04:05.000")
 
-	bytesData,_ := json.Marshal(queryData)
-	res, _ := http.Post(host, "application/json", bytes.NewReader(bytesData))
+	bytesData, _ := json.Marshal(queryData)
+	res, err := http.Post(host, "application/json", bytes.NewReader(bytesData))
+	if err != nil {
+		done <- start + err.Error()
+		return
+	}
 	defer res.Body.Close()
 
-	end := start + " " + time.Now().Format("01-02 15:04:05.000")
-	done <- end
-
+	start += "   " + time.Now().Format("01-02 15:04:05.000")
+	done <- start
 }
